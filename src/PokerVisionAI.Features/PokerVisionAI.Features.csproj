@@ -19,8 +19,15 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Ardalis.Result" Version="10.1.0" />
+		<PackageReference Include="Ardalis.Result.FluentValidation" Version="10.1.0" />
+		<PackageReference Include="Marten" Version="7.31.3" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\PokerVisionAI.Domain\PokerVisionAI.Domain.csproj" />
 	</ItemGroup>
 
 </Project>
