@@ -1,44 +1,38 @@
 ﻿using PokerVisionAI.Domain.Dtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace PokerVisionAI.Domain.Mappers
+namespace PokerVisionAI.Domain.Mappers;
+
+public static class RegionDTOMapper
 {
-    public static class RegionDTOMapper
+    public static RegionDTO ToDto(this Entities.Region region)
     {
-        public static RegionDTO ToDto(this Entities.Region region)
+        return new RegionDTO
         {
-            return new RegionDTO
-            {
-                Name = region.Id,
-                PosX = region.PosX,
-                PosY = region.PosY,
-                Width = region.Width,
-                Height = region.Height,
-                IsHash = region.IsHash,
-                IsColor = region.IsColor,
-                IsBoard = region.IsBoard,
-                Color = region.Color
-            };
-        }
+            Name = region.Id,
+            PosX = region.PosX,
+            PosY = region.PosY,
+            Width = region.Width,
+            Height = region.Height,
+            IsHash = region.IsHash,
+            IsColor = region.IsColor,
+            IsBoard = region.IsBoard,
+            Color = region.Color
+        };
+    }
 
-        public static Entities.Region ToTagEntity(this RegionDTO region)
+    public static Entities.Region ToTagEntity(this RegionDTO region)
+    {
+        return new Entities.Region
         {
-            return new Entities.Region
-            {
-                Id = region.Name,
-                PosX = region.PosX,
-                PosY = region.PosY,
-                Width = region.Width,
-                Height = region.Height,
-                IsHash = region.IsHash,
-                IsColor = region.IsColor,
-                IsBoard = region.IsBoard,
-                Color = region.Color
-            };
-        }
+            Id = region.Name,
+            PosX = region.PosX,
+            PosY = region.PosY,
+            Width = region.Width,
+            Height = region.Height,
+            IsHash = region.IsHash,
+            IsColor = region.IsColor,
+            IsBoard = region.IsBoard,
+            Color = region.Color
+        };
     }
 }

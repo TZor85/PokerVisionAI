@@ -1,12 +1,7 @@
-﻿using Marten;
-using Ardalis.Result;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Ardalis.Result;
+using Marten;
 
-namespace PokerVisionAI.Features.Regions;
+namespace PokerVisionAI.Features.Regions.Create;
 
 public class CreateRegion
 {
@@ -40,7 +35,7 @@ public class CreateRegion
             if (existingRegion != null)
                 return Result.Conflict($"Region with name {region.Id} already exists.");
 
-            if(existingRegion != null && existingRegion.DeletedDate != null)
+            if (existingRegion != null && existingRegion.DeletedDate != null)
             {
                 existingRegion.DeletedDate = null;
                 session.Store(existingRegion);

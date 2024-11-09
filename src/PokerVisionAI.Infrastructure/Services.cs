@@ -7,7 +7,7 @@ namespace PokerVisionAI.Infrastructure
     public static class Services
     {
         public static void AddDataBase(this IServiceCollection services, IConfiguration configuration, bool IsDevelopment)
-        {
+        {           
             services.AddMarten(options =>
             {
                 // Establish the connection string to your Marten database

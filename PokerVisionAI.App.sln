@@ -7,11 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokerVisionAI.App", "src\Po
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{9F6A6E8D-7103-4D8C-A4B4-A9377FE4A09E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokerVisionAI.Infrastructure", "src\PokerVisionAI.Infrastructure\PokerVisionAI.Infrastructure.csproj", "{440992A4-4DB9-425B-9BB1-A541E58BE29F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokerVisionAI.Infrastructure", "src\PokerVisionAI.Infrastructure\PokerVisionAI.Infrastructure.csproj", "{440992A4-4DB9-425B-9BB1-A541E58BE29F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokerVisionAI.Domain", "src\PokerVisionAI.Domain\PokerVisionAI.Domain.csproj", "{FB708F79-CD86-4DB7-A419-078DF27A3596}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokerVisionAI.Domain", "src\PokerVisionAI.Domain\PokerVisionAI.Domain.csproj", "{FB708F79-CD86-4DB7-A419-078DF27A3596}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokerVisionAI.Features", "src\PokerVisionAI.Features\PokerVisionAI.Features.csproj", "{9C23C4F2-C43E-414F-8AC4-40B3727AE369}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokerVisionAI.Features", "src\PokerVisionAI.Features\PokerVisionAI.Features.csproj", "{9C23C4F2-C43E-414F-8AC4-40B3727AE369}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
