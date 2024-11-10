@@ -1,8 +1,8 @@
 ﻿using PokerVisionAI.Features.Images;
 using PokerVisionAI.Features.Images.Create;
+using PokerVisionAI.Features.Images.Delete;
 using PokerVisionAI.Features.Images.Get;
 using PokerVisionAI.Features.Images.List;
-using PokerVisionAI.Features.Images.Update;
 using PokerVisionAI.Features.Regions;
 using PokerVisionAI.Features.Regions.Create;
 using PokerVisionAI.Features.Regions.Delete;
@@ -26,7 +26,7 @@ public static class Services
             .AddScoped<CreateImage>()
             .AddScoped<GetImage>()
             .AddScoped<ListImages>()
-            .AddScoped<UpdateImage>()
+            .AddScoped<DeleteImage>()
             .AddScoped<ImageUseCases>();
 
 }

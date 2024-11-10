@@ -19,8 +19,9 @@ public class CreateImage
             var image = new Domain.Entities.Image
             {
                 Id = request.Name,
-                ValueImage = request.Image,
+                ImageEncrypted = request.ImageEncrypted,
                 BinaryValue = request.BinaryValue,
+                ImageBase64 = request.ImageBase64,
                 Force = request.Force,
                 Suit = request.Suit
             };

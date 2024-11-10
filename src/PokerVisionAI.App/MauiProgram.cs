@@ -1,9 +1,12 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Maui.Controls;
+using PokerVisionAI.Domain.Options;
 using PokerVisionAI.Features;
 using PokerVisionAI.Infrastructure;
 using System.Reflection;
+using System.Text;
+using System.Text.Json;
 
 namespace PokerVisionAI.App
 {
@@ -25,14 +28,24 @@ namespace PokerVisionAI.App
                 .GetExecutingAssembly()
                 .GetManifestResourceStream("PokerVisionAI.App.wwwroot.appsettings.json");
 
-                    if (appsettingsStream != null)
-                    {
-                        var config = new ConfigurationBuilder()
-                            .AddJsonStream(appsettingsStream)
-                            .Build();
+                if (appsettingsStream != null)
+                {
+                    var config = new ConfigurationBuilder()
+                        .AddJsonStream(appsettingsStream)
+                        .Build();
 
-                        builder.Configuration.AddConfiguration(config);
-                    }
+                    builder.Configuration.AddConfiguration(config);
+                }
+                var encrypterOptions = builder.Configuration.GetSection("Encrypter").Get<EncrypterOptions>();
+
+                builder.Services.Configure<EncrypterOptions>(options =>
+                {
+                    { options.Key = encrypterOptions?.Key ?? string.Empty; }
+                });
+
+                builder.Services.AddMauiBlazorWebView();
+                builder.Services.AddDataBase(builder.Configuration, true);
+                builder.Services.AddUseCases();
 
                 builder.Services.AddMauiBlazorWebView();
                 builder.Services.AddDataBase(builder.Configuration, true);

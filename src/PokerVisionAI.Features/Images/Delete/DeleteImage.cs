@@ -1,18 +1,18 @@
 ﻿using Ardalis.Result;
 using Marten;
 
-namespace PokerVisionAI.Features.Images.Update;
+namespace PokerVisionAI.Features.Images.Delete;
 
-public class UpdateImage
+public class DeleteImage
 {
     readonly IDocumentStore _documentStore;
 
-    public UpdateImage(IDocumentStore documentStore)
+    public DeleteImage(IDocumentStore documentStore)
     {
         _documentStore = documentStore;
     }
 
-    public async Task<Result> ExecuteAsync(UpdateImageRequest request, CancellationToken ct = default)
+    public async Task<Result> ExecuteAsync(DeleteImageRequest request, CancellationToken ct = default)
     {
         try
         {
@@ -21,11 +21,8 @@ public class UpdateImage
             if (image == null)
                 return Result.NotFound();
 
-            image.Force = request.Force;
-            image.Suit = request.Suit;
-            image.BinaryValue = request.BinaryValue;
 
-            session.Store(image);
+            session.Delete(image);
             await session.SaveChangesAsync(ct);
 
             return Result.Success();
