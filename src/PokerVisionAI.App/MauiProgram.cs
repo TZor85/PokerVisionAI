@@ -37,10 +37,16 @@ namespace PokerVisionAI.App
                     builder.Configuration.AddConfiguration(config);
                 }
                 var encrypterOptions = builder.Configuration.GetSection("Encrypter").Get<EncrypterOptions>();
+                var tableMapOptions = builder.Configuration.GetSection("TableMaps").Get<TableMapOptions>();
 
                 builder.Services.Configure<EncrypterOptions>(options =>
                 {
                     { options.Key = encrypterOptions?.Key ?? string.Empty; }
+                });
+
+                builder.Services.Configure<TableMapOptions>(options =>
+                {
+                    { options.PokerTable = tableMapOptions?.PokerTable ?? new List<string>(); }
                 });
 
                 builder.Services.AddMauiBlazorWebView();

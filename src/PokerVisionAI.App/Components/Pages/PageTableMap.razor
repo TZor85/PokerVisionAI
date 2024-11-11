@@ -1,0 +1,237 @@
+﻿@page "/table-map-manager"
+@using Microsoft.Extensions.Options
+@using PokerVisionAI.Domain.Dtos
+@using PokerVisionAI.Domain.Options
+@using PokerVisionAI.Features.Regions
+@using PokerVisionAI.Features.TableMap
+@using Radzen
+@using Radzen.Blazor
+
+@inject TableMapUseCases _useCasesTableMaps
+@inject RegionUseCases _useCasesRegions
+@inject IOptions<TableMapOptions> _options
+
+<div class="container-fluid">
+    <h3>Gestor de Mapas de Mesa</h3>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <RadzenCard>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <RadzenLabel Text="Nombre" />
+                        <RadzenDropDown @bind-Value="@selectedTableMap.Name"
+                                        Data="@availableNames"
+                                        Class="w-100" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <RadzenCard>
+                            <h5>Regiones Disponibles</h5>
+                            <RadzenDataGrid Data="@availableRegionsList"
+                                            GridLines="Radzen.DataGridGridLines.Both"
+                                            TItem="RegionDTO"
+                                            AllowFiltering="true"
+                                            AllowPaging="true"
+                                            PageSize="5">
+                                <Columns>
+                                    <RadzenDataGridColumn TItem="RegionDTO"
+                                                          Property="Name"
+                                                          Title="Nombre" />
+                                    <RadzenDataGridColumn TItem="RegionDTO"
+                                                          Width="50px">
+                                        <Template Context="region">
+                                            <RadzenButton Click="@(() => AddRegion(region))"
+                                                          ButtonStyle="ButtonStyle.Success"
+                                                          Icon="add"
+                                                          Size="ButtonSize.Small" />
+                                        </Template>
+                                    </RadzenDataGridColumn>
+                                </Columns>
+                            </RadzenDataGrid>
+                        </RadzenCard>
+                    </div>
+
+                    <div class="col-md-6">
+                        <RadzenCard>
+                            <h5>Regiones Seleccionadas</h5>
+                            <RadzenDataGrid Data="@selectedTableMap.Regions"
+                                            GridLines="Radzen.DataGridGridLines.Both"
+                                            TItem="RegionDTO"
+                                            AllowPaging="true"
+                                            PageSize="5">
+                                <Columns>
+                                    <RadzenDataGridColumn TItem="RegionDTO"
+                                                          Property="Name"
+                                                          Title="Nombre" />
+                                    <RadzenDataGridColumn TItem="RegionDTO"
+                                                          Width="50px">
+                                        <Template Context="region">
+                                            <RadzenButton Click="@(() => RemoveRegion(region))"
+                                                          ButtonStyle="ButtonStyle.Danger"
+                                                          Icon="remove"
+                                                          Size="ButtonSize.Small" />
+                                        </Template>
+                                    </RadzenDataGridColumn>
+                                </Columns>
+                            </RadzenDataGrid>
+                        </RadzenCard>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-12 text-end">
+                        <RadzenButton Text="Guardar"
+                                      Click="@SaveTableMap"
+                                      ButtonStyle="ButtonStyle.Primary" />
+                    </div>
+                </div>
+            </RadzenCard>
+        </div>
+    </div>
+
+    <!-- Grid de TableMaps existentes -->
+    <RadzenDataGrid Data="@tableMaps"
+                    TItem="TableMapDTO"
+                    AllowFiltering="true"
+                    AllowColumnResize="true"
+                    AllowSorting="true"
+                    AllowPaging="true"
+                    PageSize="10">
+        <Columns>
+            <RadzenDataGridColumn TItem="TableMapDTO" Property="Name" Title="Nombre" />
+            <RadzenDataGridColumn TItem="TableMapDTO" Title="Regiones">
+                <Template Context="tableMap">
+                    <div style="max-width: 300px;">
+
+                        @if(tableMap.Regions != null && tableMap.Regions.Any())
+                        {
+                            <div class="d-flex flex-wrap gap-1">
+                                @foreach (var region in tableMap.Regions)
+                                {
+                                    <RadzenBadge BadgeStyle="BadgeStyle.Info"
+                                                 Text="@region.Name" />
+                                }
+                            </div>
+                        }
+                    </div>
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="TableMapDTO" Width="100px">
+                <Template Context="tableMap">
+                    <RadzenButton Click="@(() => EditTableMap(tableMap))"
+                                  ButtonStyle="ButtonStyle.Light"
+                                  Icon="edit"
+                                  Size="ButtonSize.Small"
+                                  Class="me-1" />
+                    <RadzenButton Click="@(() => DeleteTableMap(tableMap))"
+                                  ButtonStyle="ButtonStyle.Danger"
+                                  Icon="delete"
+                                  Size="ButtonSize.Small" />
+                </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+</div>
+
+@code
+{
+    private TableMapDTO selectedTableMap = new()
+        {
+            Name = "",
+            Regions = new()
+        };
+
+    private List<TableMapDTO> tableMaps = new();
+    private List<string> availableNames = new();
+    private List<RegionDTO> allRegions = new();
+
+    private List<RegionDTO> availableRegionsList = new();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        foreach (var item in _options.Value.PokerTable)
+        {
+            availableNames.Add(string.Join(" ",
+                            item.Split('_')
+                            .Select(word => char.ToUpper(word[0]) + word.Substring(1).ToLower())));
+        }
+
+        await LoadData();
+
+        availableRegionsList = allRegions.Where(r => selectedTableMap.Regions == null ||
+                             !selectedTableMap.Regions.Any(sr => sr.Name == r.Name)).ToList();
+    }
+
+    private async Task LoadData()
+    {
+        // Cargar nombres disponibles
+        // availableNames = await YourService.GetAvailableNames();
+        // Cargar todas las regiones disponibles
+         allRegions = await _useCasesRegions.ListRegions.ExecuteAsync();
+        // Cargar TableMaps existentes
+        // tableMaps = await YourService.GetTableMaps();
+    }
+
+    private void AddRegion(RegionDTO region)
+    {
+        if (selectedTableMap.Regions == null)
+            selectedTableMap.Regions = new List<RegionDTO>();
+
+        if (!selectedTableMap.Regions.Any(r => r.Name == region.Name))
+        {
+            availableRegionsList.Remove(region);
+            selectedTableMap.Regions.Add(region);            
+        }
+
+        StateHasChanged();
+    }
+
+    private void RemoveRegion(RegionDTO region)
+    {
+        availableRegionsList.Add(region);
+        selectedTableMap.Regions?.Remove(region);
+        StateHasChanged();
+    }
+
+    private async Task SaveTableMap()
+    {
+        if (string.IsNullOrWhiteSpace(selectedTableMap.Name))
+            return;
+
+        // Aquí guardarías en tu base de datos
+        // await YourService.SaveTableMap(selectedTableMap);
+
+        // Recargar datos
+        await LoadData();
+
+        // Reiniciar selección
+        selectedTableMap = new()
+            {
+                Name = "",
+                Regions = new()
+            };
+    }
+
+    private void EditTableMap(TableMapDTO tableMap)
+    {
+        selectedTableMap = new TableMapDTO
+            {
+                Name = tableMap.Name,
+                Regions = tableMap.Regions?.ToList() ?? new()
+            };
+    }
+
+    private async Task DeleteTableMap(TableMapDTO tableMap)
+    {
+        // Aquí eliminarías de tu base de datos
+        // await YourService.DeleteTableMap(tableMap);
+
+        // Recargar datos
+        await LoadData();
+    }
+
+}
