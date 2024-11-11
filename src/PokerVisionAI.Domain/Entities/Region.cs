@@ -12,6 +12,5 @@
         public bool IsBoard { get; set; }
         public string? Color { get; set; }
         public DateTime? DeletedDate { get; set; } = null;
-
     }
 }

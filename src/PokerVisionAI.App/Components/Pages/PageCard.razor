@@ -9,7 +9,7 @@
 @using Radzen
 @using Radzen.Blazor
 
-@inject ImageUseCases _useCases
+@inject CardUseCases _useCases
 @inject IOptions<EncrypterOptions> _encrypterOptions
 
 <div class="container-fluid">
@@ -69,7 +69,7 @@
     </div>
 
     <RadzenDataGrid Data="@images" 
-                    TItem="ImageDTO"
+                    TItem="CardDTO"
                     GridLines="Radzen.DataGridGridLines.Both"
                     Count="@Count"
                     AllowFiltering="true" 
@@ -78,15 +78,15 @@
                     AllowPaging="true" 
                     PageSize="10">
         <Columns>
-            <RadzenDataGridColumn TItem="ImageDTO" Property="Name" Title="Nombre" />
-            <RadzenDataGridColumn TItem="ImageDTO" Property="Force" Title="Fuerza" />
-            <RadzenDataGridColumn TItem="ImageDTO" Property="Suit" Title="Palo" />
-            <RadzenDataGridColumn TItem="ImageDTO" Property="Image" Title="Imagen" TextAlign="TextAlign.Center">
+            <RadzenDataGridColumn TItem="CardDTO" Property="Name" Title="Nombre" />
+            <RadzenDataGridColumn TItem="CardDTO" Property="Force" Title="Fuerza" />
+            <RadzenDataGridColumn TItem="CardDTO" Property="Suit" Title="Palo" />
+            <RadzenDataGridColumn TItem="CardDTO" Property="Image" Title="Imagen" TextAlign="TextAlign.Center">
                 <Template Context="data">
                     <RadzenImage Path="@($"data:image/jpeg;base64,{data.ImageBase64}")" />
                 </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="ImageDTO" Context="image" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
+            <RadzenDataGridColumn TItem="CardDTO" Context="image" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
                 <Template Context="image">
                     <RadzenButton ButtonStyle="ButtonStyle.Danger" 
                                 Icon="delete" 

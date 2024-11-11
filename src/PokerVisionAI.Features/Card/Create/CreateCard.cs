@@ -3,20 +3,20 @@ using Marten;
 
 namespace PokerVisionAI.Features.Images.Create;
 
-public class CreateImage
+public class CreateCard
 {
     readonly IDocumentStore _documentStore;
 
-    public CreateImage(IDocumentStore documentStore)
+    public CreateCard(IDocumentStore documentStore)
     {
         _documentStore = documentStore;
     }
 
-    public async Task<Result> ExecuteAsync(CreateImageRequest request, CancellationToken ct = default)
+    public async Task<Result> ExecuteAsync(CreateCardRequest request, CancellationToken ct = default)
     {
         try
         {
-            var image = new Domain.Entities.Image
+            var image = new Domain.Entities.Card
             {
                 Id = request.Name,
                 ImageEncrypted = request.ImageEncrypted,
@@ -27,7 +27,7 @@ public class CreateImage
             };
 
             using var session = _documentStore.LightweightSession();
-            var existingImage = await session.LoadAsync<Domain.Entities.Image>(image.Id, ct);
+            var existingImage = await session.LoadAsync<Domain.Entities.Card>(image.Id, ct);
 
             if (existingImage != null)
                 return Result.Conflict($"Image with name {image.Id} already exists.");

@@ -38,6 +38,8 @@ namespace PokerVisionAI.App
                 }
                 var encrypterOptions = builder.Configuration.GetSection("Encrypter").Get<EncrypterOptions>();
                 var tableMapOptions = builder.Configuration.GetSection("TableMaps").Get<TableMapOptions>();
+                var regionOptions = builder.Configuration.GetSection("Regions").Get<RegionOptions>();
+                var cardOptions = builder.Configuration.GetSection("Cards").Get<CardOptions>();
 
                 builder.Services.Configure<EncrypterOptions>(options =>
                 {
@@ -49,9 +51,17 @@ namespace PokerVisionAI.App
                     { options.PokerTable = tableMapOptions?.PokerTable ?? new List<string>(); }
                 });
 
-                builder.Services.AddMauiBlazorWebView();
-                builder.Services.AddDataBase(builder.Configuration, true);
-                builder.Services.AddUseCases();
+                builder.Services.Configure<RegionOptions>(options =>
+                {
+                    { options.Url = regionOptions?.Url ?? string.Empty; }
+                    { options.Path = regionOptions?.Path ?? string.Empty; }
+                });
+
+                builder.Services.Configure<CardOptions>(options =>
+                {
+                    { options.Url = cardOptions?.Url ?? string.Empty; }
+                    { options.Path = cardOptions?.Path ?? string.Empty; }
+                });
 
                 builder.Services.AddMauiBlazorWebView();
                 builder.Services.AddDataBase(builder.Configuration, true);

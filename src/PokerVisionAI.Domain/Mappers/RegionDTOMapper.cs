@@ -20,7 +20,7 @@ public static class RegionDTOMapper
         };
     }
 
-    public static Entities.Region ToTagEntity(this RegionDTO region)
+    public static Entities.Region ToEntity(this RegionDTO region)
     {
         return new Entities.Region
         {

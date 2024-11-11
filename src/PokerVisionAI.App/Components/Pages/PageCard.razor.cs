@@ -5,11 +5,11 @@ using PokerVisionAI.Features.Images.Delete;
 
 namespace PokerVisionAI.App.Components.Pages
 {
-    public partial class PageImage
+    public partial class PageCard
     {
-        private IEnumerable<ImageDTO>? images;
-        private ImageDTO? newImage = new() { Name = "" };
-        private ImageDTO? selectedImage;
+        private IEnumerable<CardDTO>? images;
+        private CardDTO? newImage = new() { Name = "" };
+        private CardDTO? selectedImage;
         private int Count = 0;
 
         protected override async Task OnInitializedAsync()
@@ -29,7 +29,7 @@ namespace PokerVisionAI.App.Components.Pages
             if (string.IsNullOrWhiteSpace(newImage?.Name))
                 return;
 
-            var image = new ImageDTO
+            var image = new CardDTO
             {
                 Name = newImage.Name,
                 Force = newImage.Force,
@@ -41,7 +41,7 @@ namespace PokerVisionAI.App.Components.Pages
                                             _encrypterOptions?.Value.Key ?? string.Empty)
             };
 
-            var request = new CreateImageRequest(
+            var request = new CreateCardRequest(
                                         image?.Name ?? string.Empty,
                                         image?.ImageEncrypted ?? string.Empty,
                                         image?.ImageBase64 ?? string.Empty,
@@ -56,9 +56,9 @@ namespace PokerVisionAI.App.Components.Pages
             newImage = new() { Name = "" };
         }
 
-        private async Task DeleteImage(ImageDTO image)
+        private async Task DeleteImage(CardDTO image)
         {
-            await _useCases.DeleteImage.ExecuteAsync(new DeleteImageRequest(image.Name));
+            await _useCases.DeleteImage.ExecuteAsync(new DeleteCardRequest(image.Name));
             images?.ToList().Remove(image);
         }
     }

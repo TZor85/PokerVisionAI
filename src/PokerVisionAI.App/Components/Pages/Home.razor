@@ -2,21 +2,27 @@
 
 
 <RadzenTabs>
-        <Tabs>
-            <RadzenTabsItem Text="Configuración">
-                <RadzenTabs>
-                    <Tabs>
-                        <RadzenTabsItem Text="TableMap">
-                            <PageTableMap />
-                        </RadzenTabsItem>
-                        <RadzenTabsItem Text="Regiones">
-                            <PageRegion />
-                        </RadzenTabsItem>
-                        <RadzenTabsItem Text="Imágenes">
-                            <PageImage />
-                        </RadzenTabsItem>
-                    </Tabs>
-                </RadzenTabs>
-            </RadzenTabsItem>
-        </Tabs>
+    <Tabs>
+        <RadzenTabsItem Text="Juego">
+            <PageGame />
+        </RadzenTabsItem>
+        <RadzenTabsItem Text="Configuración">
+            <RadzenTabs>
+                <Tabs>                    
+                    <RadzenTabsItem Text="TableMap">
+                        <PageTableMap />
+                    </RadzenTabsItem>
+                    <RadzenTabsItem Text="Regiones">
+                        <PageRegion />
+                    </RadzenTabsItem>
+                    <RadzenTabsItem Text="Cartas">
+                        <PageCard />
+                    </RadzenTabsItem>
+                    <RadzenTabsItem Text="Init Data">
+                        <PageInitConfig />
+                    </RadzenTabsItem>
+                </Tabs>
+            </RadzenTabs>
+        </RadzenTabsItem>
+    </Tabs>
 </RadzenTabs>

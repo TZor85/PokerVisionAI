@@ -1,0 +1,110 @@
+﻿@page "/initialization-manager"
+@using PokerVisionAI.Domain.Mappers
+@using PokerVisionAI.Features.Card.CreateAll
+@using PokerVisionAI.Features.Images
+@using PokerVisionAI.Features.InitialConfig.Card
+@using PokerVisionAI.Features.InitialConfig.Region
+@using PokerVisionAI.Features.InitialConfig.TableMap
+@using PokerVisionAI.Features.Regions
+@using PokerVisionAI.Features.Regions.CreateAll
+@using PokerVisionAI.Features.TableMap
+@using Radzen
+@using Radzen.Blazor
+
+@inject GetAllRegions _allRegions
+@inject GetAllCards _allCards
+@inject GetAllTableMaps _allTableMaps
+@inject RegionUseCases _regionUseCases
+@inject CardUseCases _cardUseCases
+@inject TableMapUseCases _tableMapUseCases
+
+
+<div class="container-fluid">
+    <h3>Gestor de Inicialización</h3>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <RadzenCard>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="d-flex flex-column align-items-center">
+                            <RadzenButton Click="@InitializeRegions" 
+                                        Text="Inicializar Regiones" 
+                                        ButtonStyle="ButtonStyle.Primary"
+                                        Size="ButtonSize.Large"
+                                        Class="mb-2 w-75" />
+                            
+                            @if (isInitializingRegions)
+                            {
+                                <div class="mt-2">
+                                    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
+                                </div>
+                            }
+                            
+                            @if (!string.IsNullOrEmpty(regionsMessage))
+                            {
+                                <div class="mt-2">
+                                    <RadzenText>
+                                        @regionsMessage
+                                    </RadzenText>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="d-flex flex-column align-items-center">
+                            <RadzenButton Click="@InitializeCards" 
+                                        Text="Inicializar Cartas" 
+                                        ButtonStyle="ButtonStyle.Secondary"
+                                        Size="ButtonSize.Large"
+                                        Class="mb-2 w-75" />
+                            
+                            @if (isInitializingCards)
+                            {
+                                <div class="mt-2">
+                                    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
+                                </div>
+                            }
+                            
+                            @if (!string.IsNullOrEmpty(cardsMessage))
+                            {
+                                <div class="mt-2">
+                                    <RadzenText>
+                                        @cardsMessage
+                                    </RadzenText>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="d-flex flex-column align-items-center">
+                            <RadzenButton Click="@InitializeTableMap"
+                                          Text="Inicializar TableMap"
+                                          ButtonStyle="ButtonStyle.Success"
+                                          Size="ButtonSize.Large"
+                                          Class="mb-2 w-75" />
+
+                            @if (isInitializingTableMap)
+                            {
+                                <div class="mt-2">
+                                    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
+                                </div>
+                            }
+
+                            @if (!string.IsNullOrEmpty(tableMapMessage))
+                            {
+                                <div class="mt-2">
+                                    <RadzenText>
+                                        @tableMapMessage
+                                    </RadzenText>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </RadzenCard>
+        </div>
+    </div>
+</div>

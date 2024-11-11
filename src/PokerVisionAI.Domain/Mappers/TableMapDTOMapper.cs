@@ -23,7 +23,7 @@ public static class TableMapDTOMapper
         };
     }
 
-    public static Entities.TableMap ToTagEntity(this TableMapDTO tableMap)
+    public static Entities.TableMap ToEntity(this TableMapDTO tableMap)
     {
         var regions = new List<Entities.Region>();
 
@@ -31,7 +31,7 @@ public static class TableMapDTOMapper
         {
             foreach (var region in tableMap.Regions)
             {
-                regions.Add(region.ToTagEntity());
+                regions.Add(region.ToEntity());
             }
         }
 

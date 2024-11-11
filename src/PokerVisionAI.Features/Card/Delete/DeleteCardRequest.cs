@@ -1,4 +1,4 @@
 ﻿namespace PokerVisionAI.Features.Images.Delete;
 
-public record DeleteImageRequest(string Name);
+public record DeleteCardRequest(string Name);
 

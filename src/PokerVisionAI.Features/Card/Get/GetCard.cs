@@ -5,21 +5,21 @@ using PokerVisionAI.Domain.Mappers;
 
 namespace PokerVisionAI.Features.Images.Get;
 
-public class GetImage
+public class GetCard
 {
     private readonly IDocumentStore _documentStore;
 
-    public GetImage(IDocumentStore documentStore)
+    public GetCard(IDocumentStore documentStore)
     {
         _documentStore = documentStore;
     }
 
-    public async Task<Result<ImageDTO>> ExecuteAsync(string id, CancellationToken ct = default)
+    public async Task<Result<CardDTO>> ExecuteAsync(string id, CancellationToken ct = default)
     {
         try
         {
             using var session = _documentStore.QuerySession();
-            var img = await session.LoadAsync<Domain.Entities.Image>(id, ct);
+            var img = await session.LoadAsync<Domain.Entities.Card>(id, ct);
             if (img == null)
                 return Result.NotFound();
             return Result.Success(img.ToDto());

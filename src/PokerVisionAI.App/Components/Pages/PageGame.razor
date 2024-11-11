@@ -1,0 +1,234 @@
+﻿@page "/image-capture"
+@using PokerVisionAI.Domain.Dtos
+@using Radzen
+@using Radzen.Blazor
+
+<div class="container-fluid">
+    <h3>Captura de Imagen</h3>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <RadzenCard>
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <RadzenLabel Text="TableMap" class="mb-2" />
+                        <RadzenDropDown @bind-Value="@selectedTableMap"
+                                        Data="@tableMaps"
+                                        TextProperty="Name"
+                                        ValueProperty="Name"
+                                        Class="w-100"
+                                        Placeholder="Selecciona un TableMap"
+                                        Change="@OnTableMapChange" />
+                    </div>
+                    <div class="col-md-6">
+                        <RadzenLabel Text="Hall de Cartas" class="mb-2" />
+                        <RadzenDropDown @bind-Value="@selectedHall"
+                                        Data="@halls"
+                                        Class="w-100"
+                                        Placeholder="Selecciona un Hall" />
+                    </div>
+                </div>
+
+                <div class="capture-zone"
+                     style="border: 2px dashed #ccc;
+                            min-height: 400px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            background-color: #f8f9fa;
+                            position: relative;">
+
+                    @if (string.IsNullOrEmpty(capturedImageData))
+                    {
+                        <div class="text-center">
+                            <RadzenIcon Icon="photo_camera" Style="width: 48px; height: 48px; margin-bottom: 10px;" />
+                            <div class="mb-3">Arrastre una imagen aquí o haga clic para seleccionar</div>
+                            <InputFile OnChange="@OnFileSelected"
+                                       accept="image/*"
+                                       class="position-absolute top-0 start-0 w-100 h-100 opacity-0"
+                                       style="cursor: pointer;"
+                                       disabled="@(!IsSelectionValid())" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="position-relative w-100 h-100" style="min-height: 400px;">
+                            <img src="@capturedImageData"
+                                 style="max-width: 100%; max-height: 100%; object-fit: contain;"
+                                 alt="Captured" />
+
+                            <div class="position-absolute top-0 end-0 p-2">
+                                <RadzenButton Click="@RemoveImage"
+                                              ButtonStyle="ButtonStyle.Danger"
+                                              Icon="close"
+                                              Size="ButtonSize.Small"
+                                              class="rounded-circle" />
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center">
+                            @if (!string.IsNullOrEmpty(capturedImageData))
+                            {
+                                <div>
+                                    <RadzenText TextStyle="TextStyle.Subtitle2">
+                                        Imagen capturada exitosamente
+                                    </RadzenText>
+                                </div>
+                            }
+                            <div class="ms-auto">
+                                <RadzenButton Click="@ProcessImage"
+                                              Text="Procesar Imagen"
+                                              ButtonStyle="ButtonStyle.Primary"
+                                              Disabled="@(!CanProcessImage())" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <RadzenAlert AlertStyle="AlertStyle.Danger" ShowIcon="true">
+                                @errorMessage
+                            </RadzenAlert>
+                        </div>
+                    </div>
+                }
+
+                @if (!IsSelectionValid())
+                {
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <RadzenAlert AlertStyle="AlertStyle.Warning" ShowIcon="true">
+                                Debe seleccionar un TableMap y un Hall antes de capturar una imagen
+                            </RadzenAlert>
+                        </div>
+                    </div>
+                }
+            </RadzenCard>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string? capturedImageData = string.Empty;
+    private string? errorMessage = string.Empty;
+    private string? selectedTableMap = string.Empty;
+    private string? selectedHall = string.Empty;
+    private List<TableMapDTO> tableMaps = new();
+    private List<string> halls = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+            // Cargar TableMaps
+            // tableMaps = await YourService.GetTableMaps();
+
+            // Cargar Halls
+            // halls = await YourService.GetHalls();
+
+            // Ejemplo de datos de prueba
+            // tableMaps = new List<TableMapDTO>
+            // {
+            //     new() { Name = "TableMap 1" },
+            //     new() { Name = "TableMap 2" },
+            // };
+
+            // halls = new List<string>
+            // {
+            //     "Hall 1",
+            //     "Hall 2",
+            //     "Hall 3"
+            // };
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al cargar datos: {ex.Message}";
+        }
+    }
+
+    private async Task OnTableMapChange(object value)
+    {
+        // Aquí puedes agregar lógica específica cuando cambia el TableMap
+        await Task.CompletedTask;
+    }
+
+    private bool IsSelectionValid()
+    {
+        return !string.IsNullOrEmpty(selectedTableMap) &&
+               !string.IsNullOrEmpty(selectedHall);
+    }
+
+    private bool CanProcessImage()
+    {
+        return !string.IsNullOrEmpty(capturedImageData) &&
+               IsSelectionValid();
+    }
+
+    private async Task OnFileSelected(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            errorMessage = null;
+            var file = e.File;
+
+            if (file != null)
+            {
+                // Validar tamaño (ejemplo: máximo 5MB)
+                if (file.Size > 5 * 1024 * 1024)
+                {
+                    errorMessage = "La imagen no debe superar los 5MB";
+                    return;
+                }
+
+                // Validar tipo
+                if (!file.ContentType.StartsWith("image/"))
+                {
+                    errorMessage = "El archivo debe ser una imagen";
+                    return;
+                }
+
+                var buffer = new byte[file.Size];
+                await file.OpenReadStream().ReadAsync(buffer);
+                capturedImageData = $"data:{file.ContentType};base64,{Convert.ToBase64String(buffer)}";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al cargar la imagen: {ex.Message}";
+        }
+    }
+
+    private void RemoveImage()
+    {
+        capturedImageData = null;
+        errorMessage = null;
+    }
+
+    private async Task ProcessImage()
+    {
+        if (!CanProcessImage())
+            return;
+
+        try
+        {
+            // Aquí iría tu lógica de procesamiento usando selectedTableMap y selectedHall
+            await Task.Delay(1000); // Simulación de proceso
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al procesar la imagen: {ex.Message}";
+        }
+    }
+}

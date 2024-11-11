@@ -14,7 +14,7 @@
 <div class="container-fluid">
     <h3>Gestor de Mapas de Mesa</h3>
 
-    <div class="row mb-4">
+    @* <div class="row mb-4">
         <div class="col-12">
             <RadzenCard>
                 <div class="row mb-3">
@@ -90,7 +90,7 @@
                 </div>
             </RadzenCard>
         </div>
-    </div>
+    </div> *@
 
     <!-- Grid de TableMaps existentes -->
     <RadzenDataGrid Data="@tableMaps"
@@ -171,9 +171,9 @@
         // Cargar nombres disponibles
         // availableNames = await YourService.GetAvailableNames();
         // Cargar todas las regiones disponibles
-         allRegions = await _useCasesRegions.ListRegions.ExecuteAsync();
+        allRegions = await _useCasesRegions.ListRegions.ExecuteAsync();
         // Cargar TableMaps existentes
-        // tableMaps = await YourService.GetTableMaps();
+        tableMaps = await _useCasesTableMaps.ListTableMaps.ExecuteAsync();
     }
 
     private void AddRegion(RegionDTO region)
