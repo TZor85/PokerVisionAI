@@ -5,17 +5,17 @@ namespace PokerVisionAI.Features.InitialConfig.TableMap;
 
 public class GetAllTableMaps
 {
-    public async Task<List<TableMapDTO>> Executesync()
+    public async Task<List<TableMapDTO>?> Executesync()
     {
         try
         {
             var customFileType = new FilePickerFileType(
                 new Dictionary<DevicePlatform, IEnumerable<string>>
                 {
-            { DevicePlatform.WinUI, new[] { ".json" } },
-            { DevicePlatform.iOS, new[] { "public.json" } },
-            { DevicePlatform.Android, new[] { "application/json" } },
-            { DevicePlatform.macOS, new[] { "json" } }
+                    { DevicePlatform.WinUI, new[] { ".json" } },
+                    { DevicePlatform.iOS, new[] { "public.json" } },
+                    { DevicePlatform.Android, new[] { "application/json" } },
+                    { DevicePlatform.macOS, new[] { "json" } }
                 });
 
             var options = new PickOptions
@@ -41,11 +41,14 @@ public class GetAllTableMaps
                         PropertyNameCaseInsensitive = true
                     });
 
-                    return tableMap;
+                    return tableMap ?? new List<TableMapDTO>();
                 }
                 else
                 {
-                    await Application.Current.MainPage.DisplayAlert("Error", "Por favor seleccione un archivo JSON válido", "OK");
+                    if (Application.Current?.MainPage != null)
+                    {
+                        await Application.Current.MainPage.DisplayAlert("Error", "Por favor seleccione un archivo JSON válido", "OK");
+                    }
                     return null;
                 }
             }
@@ -57,7 +60,10 @@ public class GetAllTableMaps
         }
         catch (Exception ex)
         {
-            await Application.Current.MainPage.DisplayAlert("Error", $"Error al cargar el archivo: {ex.Message}", "OK");
+            if (Application.Current?.MainPage != null)
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", $"Error al cargar el archivo: {ex.Message}", "OK");
+            }
             return null;
         }
     }

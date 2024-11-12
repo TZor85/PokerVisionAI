@@ -5,7 +5,7 @@ namespace PokerVisionAI.Features.InitialConfig.Card;
 
 public class GetAllCards
 {
-    public async Task<List<CardDTO>> Executesync()
+    public async Task<List<CardDTO>?> Executesync()
     {
         try
         {
@@ -41,11 +41,14 @@ public class GetAllCards
                         PropertyNameCaseInsensitive = true
                     });
 
-                    return cards;
+                    return cards ?? new List<CardDTO>();
                 }
                 else
                 {
-                    await Application.Current.MainPage.DisplayAlert("Error", "Por favor seleccione un archivo JSON válido", "OK");
+                    if (Application.Current?.MainPage != null)
+                    {
+                        await Application.Current.MainPage.DisplayAlert("Error", "Por favor seleccione un archivo JSON válido", "OK");
+                    }
                     return null;
                 }
             }
@@ -57,7 +60,10 @@ public class GetAllCards
         }
         catch (Exception ex)
         {
-            await Application.Current.MainPage.DisplayAlert("Error", $"Error al cargar el archivo: {ex.Message}", "OK");
+            if (Application.Current?.MainPage != null)
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", $"Error al cargar el archivo: {ex.Message}", "OK");
+            }
             return null;
         }
     }

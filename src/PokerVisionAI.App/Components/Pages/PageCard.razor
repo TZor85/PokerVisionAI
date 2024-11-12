@@ -13,61 +13,6 @@
 @inject IOptions<EncrypterOptions> _encrypterOptions
 
 <div class="container-fluid">
-    <div class="row mb-4">
-        <div class="col-12">
-            <RadzenCard>
-                <h4>Nueva Imagen</h4>
-                
-                <!-- Primera fila: Id, Force, Suit -->
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <RadzenLabel Text="Nombre" />
-                        <RadzenTextBox @bind-Value="@newImage.Name" Class="w-100" />
-                    </div>
-                    <div class="col-md-4">
-                        <RadzenLabel Text="Fuerza" />
-                        <RadzenNumeric @bind-Value="@newImage.Force" Class="w-100" Min="0" />
-                    </div>
-                    <div class="col-md-4">
-                        <RadzenLabel Text="Palo" />
-                        <RadzenNumeric @bind-Value="@newImage.Suit" Class="w-100" Min="0" />
-                    </div>
-                </div>
-                                
-                <!-- Segunda fila: Campo de imagen -->
-                <div class="row mb-3">
-                    <div class="col-12">
-                        <RadzenLabel Text="Valor Binario" />
-                        <RadzenTextArea @bind-Value="@newImage.BinaryValue"
-                                        Class="w-100"
-                                        Rows="4"
-                                        Style="max-height: 200px; overflow-y: auto;" />
-                    </div>
-                </div>
-
-                <!-- Tercera fila: BinaryValue -->
-                <div class="row mb-3">
-                    <div class="col-12">
-                        <RadzenLabel Text="Imagen (Base64)" />
-                        <RadzenTextArea @bind-Value="@newImage.ImageEncrypted" 
-                                      Class="w-100" 
-                                      Rows="4"
-                                      Style="max-height: 200px; overflow-y: auto;" />
-                    </div>
-                </div>
-                                
-                <!-- Botón de agregar -->
-                <div class="row">
-                    <div class="col-12 text-end">
-                        <RadzenButton Click="@AddImage" 
-                                    Text="Agregar Imagen" 
-                                    ButtonStyle="ButtonStyle.Primary" />
-                    </div>
-                </div>
-            </RadzenCard>
-        </div>
-    </div>
-
     <RadzenDataGrid Data="@images" 
                     TItem="CardDTO"
                     GridLines="Radzen.DataGridGridLines.Both"

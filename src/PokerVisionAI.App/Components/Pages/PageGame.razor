@@ -1,53 +1,59 @@
 ﻿@page "/image-capture"
 @using PokerVisionAI.Domain.Dtos
+@using PokerVisionAI.Features.Images
+@using PokerVisionAI.Features.TableMap
 @using Radzen
 @using Radzen.Blazor
+@using SkiaSharp
+
+@inject TableMapUseCases _tableMapUseCases
+@inject CardUseCases _cardUseCases
 
 <div class="container-fluid">
     <h3>Captura de Imagen</h3>
 
     <div class="row mb-4">
-        <div class="col-12">
+        <div class="col-4">
             <RadzenCard>
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <RadzenLabel Text="TableMap" class="mb-2" />
-                        <RadzenDropDown @bind-Value="@selectedTableMap"
-                                        Data="@tableMaps"
-                                        TextProperty="Name"
-                                        ValueProperty="Name"
-                                        Class="w-100"
-                                        Placeholder="Selecciona un TableMap"
-                                        Change="@OnTableMapChange" />
-                    </div>
-                    <div class="col-md-6">
-                        <RadzenLabel Text="Hall de Cartas" class="mb-2" />
-                        <RadzenDropDown @bind-Value="@selectedHall"
-                                        Data="@halls"
-                                        Class="w-100"
-                                        Placeholder="Selecciona un Hall" />
-                    </div>
-                </div>
+                <RadzenLabel Text="TableMaps" class="mb-2"/>
+                <RadzenDropDown @bind-Value="@selectedTableMap"
+                                Data="@tableMaps"
+                                TextProperty="Name"
+                                ValueProperty="Name"
+                                Class="w-100"
+                                Placeholder="Selecciona un TableMap"
+                                Change="@OnTableMapChange"/>
 
+                <RadzenLabel Text="Halls" class="mb-2"/>
+                <RadzenDropDown @bind-Value="@selectedHall"
+                                Data="@halls"
+                                Class="w-100"
+                                Placeholder="Selecciona un Hall"/>
+            </RadzenCard>
+        </div>
+        <div class="col-8">
+            <RadzenCard>
                 <div class="capture-zone"
                      style="border: 2px dashed #ccc;
-                            min-height: 400px;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            background-color: #f8f9fa;
-                            position: relative;">
+                        width: 1024px;
+                        height: 726px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        background-color: #f8f9fa;
+                        position: relative;">
 
                     @if (string.IsNullOrEmpty(capturedImageData))
                     {
                         <div class="text-center">
-                            <RadzenIcon Icon="photo_camera" Style="width: 48px; height: 48px; margin-bottom: 10px;" />
+                            <RadzenIcon Icon="photo_camera" Style="width: 48px; height: 48px; margin-bottom: 10px;"/>
                             <div class="mb-3">Arrastre una imagen aquí o haga clic para seleccionar</div>
                             <InputFile OnChange="@OnFileSelected"
                                        accept="image/*"
                                        class="position-absolute top-0 start-0 w-100 h-100 opacity-0"
                                        style="cursor: pointer;"
-                                       disabled="@(!IsSelectionValid())" />
+                                       MaxFileSize="10485760"
+                                       disabled="@(!IsSelectionValid())"/>
                         </div>
                     }
                     else
@@ -55,14 +61,14 @@
                         <div class="position-relative w-100 h-100" style="min-height: 400px;">
                             <img src="@capturedImageData"
                                  style="max-width: 100%; max-height: 100%; object-fit: contain;"
-                                 alt="Captured" />
+                                 alt="Captured"/>
 
                             <div class="position-absolute top-0 end-0 p-2">
                                 <RadzenButton Click="@RemoveImage"
                                               ButtonStyle="ButtonStyle.Danger"
                                               Icon="close"
                                               Size="ButtonSize.Small"
-                                              class="rounded-circle" />
+                                              class="rounded-circle"/>
                             </div>
                         </div>
                     }
@@ -83,7 +89,7 @@
                                 <RadzenButton Click="@ProcessImage"
                                               Text="Procesar Imagen"
                                               ButtonStyle="ButtonStyle.Primary"
-                                              Disabled="@(!CanProcessImage())" />
+                                              Disabled="@(!CanProcessImage())"/>
                             </div>
                         </div>
                     </div>
@@ -133,10 +139,12 @@
         try
         {
             // Cargar TableMaps
-            // tableMaps = await YourService.GetTableMaps();
+            tableMaps = await _tableMapUseCases.ListTableMaps.ExecuteAsync();
 
             // Cargar Halls
-            // halls = await YourService.GetHalls();
+            var cards = await _cardUseCases.ListImages.ExecuteAsync();
+            halls.AddRange(cards.Value.Select(c => c.Hall).Where(h => h != null).Cast<string>().Distinct().ToList());
+
 
             // Ejemplo de datos de prueba
             // tableMaps = new List<TableMapDTO>
@@ -185,10 +193,10 @@
 
             if (file != null)
             {
-                // Validar tamaño (ejemplo: máximo 5MB)
-                if (file.Size > 5 * 1024 * 1024)
+                // Validar tamaño (ejemplo: máximo 25MB)
+                if (file.Size > 25 * 1024 * 1024)
                 {
-                    errorMessage = "La imagen no debe superar los 5MB";
+                    errorMessage = "La imagen no debe superar los 10MB";
                     return;
                 }
 
@@ -199,8 +207,16 @@
                     return;
                 }
 
+                var maxAllowedSize = 25 * 1024 * 1024; // 25MB por ejemplo
                 var buffer = new byte[file.Size];
-                await file.OpenReadStream().ReadAsync(buffer);
+                using var stream = file.OpenReadStream(maxAllowedSize);
+                await stream.ReadAsync(buffer);
+
+                using var skStream = new SKMemoryStream(buffer);
+                using var image = SKBitmap.Decode(skStream);
+                int width = image.Width;
+                int height = image.Height;
+
                 capturedImageData = $"data:{file.ContentType};base64,{Convert.ToBase64String(buffer)}";
             }
         }

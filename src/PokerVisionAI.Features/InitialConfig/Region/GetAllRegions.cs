@@ -5,7 +5,7 @@ namespace PokerVisionAI.Features.InitialConfig.Region;
 
 public class GetAllRegions
 {    
-    public async Task<List<RegionDTO>> Executesync()
+    public async Task<List<RegionDTO>?> Executesync()
     {
         try
         {
@@ -40,12 +40,15 @@ public class GetAllRegions
                     {
                         PropertyNameCaseInsensitive = true
                     });
-
-                    return regions;
+                    
+                    return regions ?? new List<RegionDTO>();
                 }
                 else
                 {
-                    await Application.Current.MainPage.DisplayAlert("Error", "Por favor seleccione un archivo JSON válido", "OK");
+                    if (Application.Current?.MainPage != null)
+                    {
+                        await Application.Current.MainPage.DisplayAlert("Error", "Por favor seleccione un archivo JSON válido", "OK");
+                    }
                     return null;
                 }
             }
@@ -57,7 +60,10 @@ public class GetAllRegions
         }
         catch (Exception ex)
         {
-            await Application.Current.MainPage.DisplayAlert("Error", $"Error al cargar el archivo: {ex.Message}", "OK");
+            if (Application.Current?.MainPage != null)
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", $"Error al cargar el archivo: {ex.Message}", "OK");
+            }
             return null;
         }
     }

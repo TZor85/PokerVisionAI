@@ -179,39 +179,5 @@ public static class EncrypterImageHelper
             // O si solo quieres el base64
             return decrypted;
         }
-    }
-
-    //public static Image GetImageDecrypted(string base64String, string secret)
-    //{
-    //    using (SHA256 mySHA256 = SHA256.Create())
-    //    {
-    //        byte[] key = mySHA256.ComputeHash(Encoding.ASCII.GetBytes(secret));
-    //        byte[] iv = new byte[16] { 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 };
-    //        string decrypted = Decrypt(base64String, key, iv);
-    //        byte[] byteImage = Convert.FromBase64String(decrypted);
-    //        var mss = new MemoryStream(byteImage);
-
-    //        // Crear la imagen en MAUI
-    //        return new Image
-    //        {
-    //            Source = ImageSource.FromStream(() => new MemoryStream(byteImage))
-    //        };
-    //    }
-    //}
+    }    
 }
-
-    //public static Image GetImageDecrypted(string base64String, string secret)
-    //{
-    //    using (SHA256 mySHA256 = SHA256.Create())
-    //    {
-    //        byte[] key = mySHA256.ComputeHash(Encoding.ASCII.GetBytes(secret));
-    //        byte[] iv = new byte[16] { 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 };
-
-    //        string decrypted = Decrypt(base64String, key, iv);
-    //        byte[] byteImage = Convert.FromBase64String(decrypted);
-
-    //        var mss = new MemoryStream(byteImage, 0, byteImage.Length);
-    //        return Image.FromStream(mss, true);
-    //    }
-    //}
-

@@ -15,7 +15,7 @@ public class ListCards
         _documentStore = documentStore;
     }
 
-    public async Task<PagedResult<List<CardDTO>>> ExecuteAsync(int pageNumber = 1, int pageSize = 100, CancellationToken ct = default)
+    public async Task<Result<List<CardDTO>>> ExecuteAsync(int pageNumber = 1, int pageSize = 100, CancellationToken ct = default)
     {
         try
         {
