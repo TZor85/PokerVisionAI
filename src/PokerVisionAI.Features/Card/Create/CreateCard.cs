@@ -1,7 +1,7 @@
 ﻿using Ardalis.Result;
 using Marten;
 
-namespace PokerVisionAI.Features.Images.Create;
+namespace PokerVisionAI.Features.Card.Create;
 
 public class CreateCard
 {

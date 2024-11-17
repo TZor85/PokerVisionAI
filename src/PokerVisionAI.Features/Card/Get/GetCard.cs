@@ -3,7 +3,7 @@ using Ardalis.Result;
 using PokerVisionAI.Domain.Dtos;
 using PokerVisionAI.Domain.Mappers;
 
-namespace PokerVisionAI.Features.Images.Get;
+namespace PokerVisionAI.Features.Card.Get;
 
 public class GetCard
 {

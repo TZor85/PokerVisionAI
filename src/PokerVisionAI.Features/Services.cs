@@ -1,9 +1,12 @@
-﻿using PokerVisionAI.Features.Card.CreateAll;
-using PokerVisionAI.Features.Images;
-using PokerVisionAI.Features.Images.Create;
-using PokerVisionAI.Features.Images.Delete;
-using PokerVisionAI.Features.Images.Get;
-using PokerVisionAI.Features.Images.List;
+﻿using PokerVisionAI.Features.Action;
+using PokerVisionAI.Features.Action.Create;
+using PokerVisionAI.Features.Card;
+using PokerVisionAI.Features.Card.Create;
+using PokerVisionAI.Features.Card.CreateAll;
+using PokerVisionAI.Features.Card.Delete;
+using PokerVisionAI.Features.Card.Get;
+using PokerVisionAI.Features.Card.List;
+using PokerVisionAI.Features.InitialConfig.Action;
 using PokerVisionAI.Features.InitialConfig.Card;
 using PokerVisionAI.Features.InitialConfig.Region;
 using PokerVisionAI.Features.InitialConfig.TableMap;
@@ -48,9 +51,13 @@ public static class Services
             .AddScoped<DeleteTableMap>()
             .AddScoped<CreateAllTableMap>()
             .AddScoped<TableMapUseCases>()
-        
+
+            .AddScoped<CreateAction>()
+            .AddScoped<ActionUseCases>()
+
             .AddScoped<GetAllRegions>()
             .AddScoped<GetAllCards>()
-            .AddScoped<GetAllTableMaps>();
+            .AddScoped<GetAllTableMaps>()
+            .AddScoped<GetAllActions>();
 
 }

@@ -1,4 +1,6 @@
-﻿using PokerVisionAI.Domain.Mappers;
+﻿using PokerVisionAI.Domain.Dtos;
+using PokerVisionAI.Domain.Mappers;
+using PokerVisionAI.Features.Action.Create;
 using PokerVisionAI.Features.Card.CreateAll;
 using PokerVisionAI.Features.Regions.CreateAll;
 using PokerVisionAI.Features.TableMap.CreateAll;
@@ -10,12 +12,15 @@ namespace PokerVisionAI.App.Components.Pages
         private bool isInitializingRegions;
         private bool isInitializingCards;
         private bool isInitializingTableMap;
+        private bool isInitializingAction;
         private string? regionsMessage;
         private string? cardsMessage;
         private string? tableMapMessage;
+        private string? actionMessage;
         private bool regionsSuccess;
         private bool cardsSuccess;
         private bool tableMapSuccess;
+        private bool actionSuccess;
 
         private async Task InitializeRegions()
         {
@@ -108,6 +113,33 @@ namespace PokerVisionAI.App.Components.Pages
             finally
             {
                 isInitializingTableMap = false;
+            }
+        }
+
+        private async Task InitializeAction()
+        {
+            try
+            {
+                isInitializingAction = true;
+                actionMessage = null;
+
+                var actionDto = await _allActions?.ExecuteAsync() ?? new ActionDTO { Name = string.Empty};
+                var action = actionDto?.ToEntity() ?? new Domain.Entities.Action { Id = string.Empty };
+
+                await _actionUseCases.CreateAction.ExecuteAsync(new CreateActionRequest(action));
+
+                actionMessage = "Action inicializada correctamente";
+                actionSuccess = true;
+
+            }
+            catch (Exception ex)
+            {
+                actionMessage = $"Error al inicializar TableMap: {ex.Message}";
+                actionSuccess = false;
+            }
+            finally
+            {
+                isInitializingAction = false;
             }
         }
     }

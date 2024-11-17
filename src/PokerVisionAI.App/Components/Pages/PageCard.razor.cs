@@ -1,7 +1,7 @@
 ﻿using PokerVisionAI.Domain.Dtos;
 using PokerVisionAI.Domain.Helpers;
-using PokerVisionAI.Features.Images.Create;
-using PokerVisionAI.Features.Images.Delete;
+using PokerVisionAI.Features.Card.Create;
+using PokerVisionAI.Features.Card.Delete;
 
 namespace PokerVisionAI.App.Components.Pages
 {

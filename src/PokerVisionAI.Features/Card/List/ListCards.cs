@@ -4,7 +4,7 @@ using Marten.Pagination;
 using PokerVisionAI.Domain.Dtos;
 using PokerVisionAI.Domain.Mappers;
 
-namespace PokerVisionAI.Features.Images.List;
+namespace PokerVisionAI.Features.Card.List;
 
 public class ListCards
 {

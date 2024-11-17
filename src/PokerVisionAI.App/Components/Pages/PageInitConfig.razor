@@ -1,7 +1,9 @@
 ﻿@page "/initialization-manager"
 @using PokerVisionAI.Domain.Mappers
+@using PokerVisionAI.Features.Action
+@using PokerVisionAI.Features.Card
 @using PokerVisionAI.Features.Card.CreateAll
-@using PokerVisionAI.Features.Images
+@using PokerVisionAI.Features.InitialConfig.Action
 @using PokerVisionAI.Features.InitialConfig.Card
 @using PokerVisionAI.Features.InitialConfig.Region
 @using PokerVisionAI.Features.InitialConfig.TableMap
@@ -14,9 +16,11 @@
 @inject GetAllRegions _allRegions
 @inject GetAllCards _allCards
 @inject GetAllTableMaps _allTableMaps
+@inject GetAllActions _allActions
 @inject RegionUseCases _regionUseCases
 @inject CardUseCases _cardUseCases
 @inject TableMapUseCases _tableMapUseCases
+@inject ActionUseCases _actionUseCases
 
 
 <div class="container-fluid">
@@ -26,7 +30,7 @@
         <div class="col-12">
             <RadzenCard>
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="d-flex flex-column align-items-center">
                             <RadzenButton Click="@InitializeRegions" 
                                         Text="Inicializar Regiones" 
@@ -52,7 +56,7 @@
                         </div>
                     </div>
                     
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="d-flex flex-column align-items-center">
                             <RadzenButton Click="@InitializeCards" 
                                         Text="Inicializar Cartas" 
@@ -78,7 +82,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="d-flex flex-column align-items-center">
                             <RadzenButton Click="@InitializeTableMap"
                                           Text="Inicializar TableMap"
@@ -98,6 +102,32 @@
                                 <div class="mt-2">
                                     <RadzenText>
                                         @tableMapMessage
+                                    </RadzenText>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="d-flex flex-column align-items-center">
+                            <RadzenButton Click="@InitializeAction"
+                                          Text="Inicializar Acción"
+                                          ButtonStyle="ButtonStyle.Success"
+                                          Size="ButtonSize.Large"
+                                          Class="mb-2 w-75" />
+
+                            @if (isInitializingAction)
+                            {
+                                <div class="mt-2">
+                                    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
+                                </div>
+                            }
+
+                            @if (!string.IsNullOrEmpty(actionMessage))
+                            {
+                                <div class="mt-2">
+                                    <RadzenText>
+                                        @actionMessage
                                     </RadzenText>
                                 </div>
                             }

@@ -1,6 +1,6 @@
 ﻿@page "/image-capture"
 @using PokerVisionAI.Domain.Dtos
-@using PokerVisionAI.Features.Images
+@using PokerVisionAI.Features.Card
 @using PokerVisionAI.Features.TableMap
 @using Radzen
 @using Radzen.Blazor
@@ -143,22 +143,16 @@
 
             // Cargar Halls
             var cards = await _cardUseCases.ListImages.ExecuteAsync();
-            halls.AddRange(cards.Value.Select(c => c.Hall).Where(h => h != null).Cast<string>().Distinct().ToList());
+            var pp = cards.Value.Select(c => c.Hall).Distinct().ToList();
 
-
-            // Ejemplo de datos de prueba
-            // tableMaps = new List<TableMapDTO>
-            // {
-            //     new() { Name = "TableMap 1" },
-            //     new() { Name = "TableMap 2" },
-            // };
-
-            // halls = new List<string>
-            // {
-            //     "Hall 1",
-            //     "Hall 2",
-            //     "Hall 3"
-            // };
+            foreach (var item in pp)
+            {
+                foreach (var item2 in item)
+                {
+                    if (!halls.Contains(item2))
+                        halls.Add(item2);
+                }   
+            }            
         }
         catch (Exception ex)
         {
