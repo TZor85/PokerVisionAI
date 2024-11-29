@@ -1,0 +1,433 @@
+﻿@page "/ocr"
+
+@using PokerVisionAI.App.Services
+@using System.Drawing;
+@using PokerVisionAI.Domain.Dtos
+@using PokerVisionAI.Features.Regions
+@using PokerVisionAI.Features.Regions.Update
+@using System.ComponentModel
+
+@inject OcrService _ocrService
+@inject ColorDetectionService _colorDetectionService
+@inject ImageNavigatorService _imageNavService
+@inject FileProcessorService _fileProcessor
+@inject ImageCropperService _imageCrop
+@inject RegionUseCases _regionUseCases
+
+
+<RadzenRow>
+    <RadzenColumn Size="2">
+        <RadzenCard>
+            <RadzenTree Data="@regions"
+            @bind-Value="regionSelected"
+            TextProperty="Name"
+            ValueProperty="Name"
+            Placeholder="Selecciona una region"
+            Change="@OnRegionChange">
+
+                <RadzenTreeLevel TextProperty="@nameof(RegionCategoryDTO.Name)" ChildrenProperty="Regions" />
+            </RadzenTree>
+        </RadzenCard>
+    </RadzenColumn>
+    <RadzenColumn Size="10">
+        <RadzenCard>
+            <RadzenButton Click="@NavigatePrevious" Disabled="@(currentImageIndex <= 0)" Icon="arrow_back" />
+            <RadzenButton Click="@NavigateNext" Disabled="@(currentImageIndex >= loadedImages.Count - 1)" Icon="arrow_forward" />
+            @* <InputFile OnChange="@ProcessFile" accept=".jpg,.jpeg,.png,.bmp" /> *@
+            <InputFile OnChange="OnInputFileChange" accept="image/*" class="@(error != null ? "is-invalid" : "")" />
+            <RadzenRow Style="padding-top: 15px;">
+                <RadzenColumn Size="3">
+                    <RadzenRow>
+                        <RadzenLabel Style="padding-left: 9%;" Text="X:" />
+                        <RadzenNumeric Value="@x" Change="@((int value) => x = value)" />
+                    </RadzenRow>
+                </RadzenColumn>
+                <RadzenColumn Size="3">
+                    <RadzenRow>
+                        <RadzenLabel Style="padding-left: 11%;" Text="Y:" />
+                        <RadzenNumeric Value="@y" Change="@((int value) => y = value)" />
+                    </RadzenRow>
+                </RadzenColumn>
+                <RadzenColumn Size="2">
+                    <RadzenButton Shade="Shade.Darker" Variant="Variant.Text" Click="ExtractText">Texto</RadzenButton>
+                </RadzenColumn>
+                <RadzenColumn Size="2">
+                    <RadzenButton Shade="Shade.Darker" Variant="Variant.Text" Click="GetColor">Color</RadzenButton>
+                </RadzenColumn>
+                <RadzenColumn Size="2">
+                    <RadzenButton Shade="Shade.Darker" Variant="Variant.Text" Click="GetImage">Imagen</RadzenButton>
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow Style="padding-top: 15px;">
+                <RadzenColumn Size="3">
+                    <RadzenRow>
+                        <RadzenLabel Text="Width:" />
+                        <RadzenNumeric Value="@width" Change="@((int value) => width = value)" />
+                    </RadzenRow>
+                </RadzenColumn>
+                <RadzenColumn Size="3">
+                    <RadzenRow>
+                        <RadzenLabel Text="Height:" />
+                        <RadzenNumeric Value="@height" Change="@((int value) => height = value)" />
+                    </RadzenRow>
+                </RadzenColumn>
+                <RadzenColumn Size="2">
+                    <RadzenButton Shade="Shade.Darker" Variant="Variant.Text" Click="UpdateRegion">Actualizar</RadzenButton>
+                </RadzenColumn>
+                <RadzenColumn Size="2">
+                    <RadzenColorPicker @bind-Value=@currentColor
+                    ShowHSV=false
+                    ShowRGBA=true
+                    ShowColors=true
+                    ShowHex=true
+                    Disabled=true />
+
+                    <div class="mt-1">
+                        <RadzenLabel Text=@($"Rojo: {rgbValues.Red}") Style="color: red;" />
+                        <RadzenLabel Text=@($"Verde: {rgbValues.Green}") Style="color: green;" />
+                        <RadzenLabel Text=@($"Azul: {rgbValues.Blue}") Style="color: blue;" />
+                        <RadzenLabel Text=@($"Hex: {currentColor}") />
+                    </div>
+                </RadzenColumn>
+                <RadzenColumn Size="2">
+                    <RadzenImage Path="@($"{_imageRegionCrop}")" AlternateText="base64 image" />
+                </RadzenColumn>
+            </RadzenRow>
+        </RadzenCard>
+        <RadzenCard Style="padding-top: 15px;">
+            @if (imageDataUrl != null)
+            {
+                <div class="mt-3">
+                    <h4>Región Seleccionada:</h4>
+                    <div style="position: relative; display: inline-block;">
+                        <RadzenImage Path="@($"{imageDataUrl}")" AlternateText="base64 image" Style="max-width: 100%;" />
+                        @* <img src="@imageDataUrl" alt="Región seleccionada" style="max-width: 100%;" /> *@
+                        <div style="@GetImageOverlayStyle()"></div>
+                    </div>
+                </div>
+            }
+
+            @* @if (!string.IsNullOrEmpty(extractedTextDebug))
+            { *@
+            <h4>Imagen Procesada (Debug):</h4>
+            <img src="@debugImageUrl" alt="Imagen procesada" />
+            <pre>@extractedTextDebug</pre>
+            @*  } *@
+
+            @if (!string.IsNullOrEmpty(error))
+            {
+                <div class="alert alert-danger mt-3">
+                    @error
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(extractedTextNumber))
+            {
+                <div class="mt-3">
+                    <h4>Texto extraído:</h4>
+                    <pre>@extractedTextNumber - @extractedText</pre>
+                </div>
+            }
+        </RadzenCard>
+    </RadzenColumn>
+</RadzenRow>
+
+
+
+
+@code {
+    private IBrowserFile? currentFile;
+    private string? extractedTextNumber;
+    private string? extractedText;
+    private string? extractedTextDebug;
+    private string? error;
+    private int x;
+    private int y;
+    private int width;
+    private int height;
+    private string? imageDataUrl;
+    private string? processError;
+    private string? currentColor;
+    private List<(IBrowserFile File, string DataUrl)> loadedImages = new();
+    private int currentImageIndex = -1;
+    private (int Red, int Green, int Blue) rgbValues;
+    private readonly long maxFileSize = 20 * 1024 * 1024;
+
+    private string debugImageUrl;
+
+    object? regionSelected;
+    string? _imageRegionCrop;
+    List<RegionCategoryDTO>? regions;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        var data = await _regionUseCases.ListRegions.ExecuteAsync();
+        regions = data.Value.ToList();
+    }
+
+    private async Task OnInputFileChange(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            error = null;
+            currentFile = e.File;
+
+            (processError, imageDataUrl) = await _fileProcessor.ProcessFileAsync(e.File);
+
+            if (!string.IsNullOrEmpty(processError))
+            {
+                error = processError;
+                return;
+            }
+
+            loadedImages.Add((currentFile, imageDataUrl));
+            currentImageIndex = loadedImages.Count - 1;
+
+            // Forzar actualización de la UI
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            error = $"Error inesperado: {ex.Message}";
+            StateHasChanged();
+        }
+    }
+
+    public void Dispose()
+    {
+        // Limpieza de recursos
+        foreach (var (file, _) in loadedImages)
+        {
+            try
+            {
+                if (file is IDisposable disposable)
+                {
+                    disposable.Dispose();
+                }
+            }
+            catch { /* Ignorar errores durante la limpieza */ }
+        }
+
+        loadedImages.Clear();
+        currentFile = null;
+    }
+
+    // private async Task ProcessFile(InputFileChangeEventArgs e)
+    // {
+    //     try
+    //     {
+    //         error = null;
+    //         extractedTextNumber = null;
+
+    //         // Establecemos un timeout para la operación completa
+    //         using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(2));
+
+    //         if (e == null || e.File == null)
+    //         {
+    //             error = "No se ha seleccionado ningún archivo.";
+    //             return;
+    //         }
+
+    //         if (e.File.Size > maxFileSize)
+    //         {
+    //             error = "El archivo excede el tamaño máximo permitido de 20MB.";
+    //             return;
+    //         }
+
+    //         currentFile = e.File;
+
+    //         // Utilizamos un scope para asegurar la liberación de recursos
+    //         await using (var stream = e.File.OpenReadStream(maxFileSize))
+    //         await using (var ms = new MemoryStream())
+    //         {
+    //             // Copiamos el stream con timeout
+    //             await stream.CopyToAsync(ms, 81920, cts.Token);
+
+    //             if (ms.Length == 0)
+    //             {
+    //                 error = "No se pudo leer el archivo de imagen.";
+    //                 return;
+    //             }
+
+    //             var bytes = ms.ToArray();
+    //             var base64 = Convert.ToBase64String(bytes);
+    //             imageDataUrl = $"data:{e.File.ContentType};base64,{base64}";
+
+    //             loadedImages ??= new List<(IBrowserFile, string)>();
+    //             loadedImages.Add((currentFile, imageDataUrl));
+    //             currentImageIndex = loadedImages.Count - 1;
+    //         }
+    //     }
+    //     catch (OperationCanceledException)
+    //     {
+    //         error = "La operación ha excedido el tiempo máximo permitido.";
+    //     }
+    //     catch (Win32Exception w32Ex)
+    //     {
+    //         error = "Error en el sistema de archivos: " + w32Ex.Message;
+    //         // Forzar la liberación de recursos
+    //         GC.Collect();
+    //         GC.WaitForPendingFinalizers();
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         error = $"Error al procesar la imagen: {ex.Message}";
+    //     }
+    //     finally
+    //     {
+    //         // Asegurarse de que todos los recursos se liberan
+    //         if (currentFile != null)
+    //         {
+    //             await DisposeFileResourcesAsync();
+    //         }
+    //     }
+
+    // }
+
+    private async Task DisposeFileResourcesAsync()
+    {
+        try
+        {
+            // Forzar la liberación de recursos relacionados con el archivo
+            currentFile = null;
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            await Task.Delay(100); // Pequeña pausa para asegurar la liberación
+        }
+        catch
+        {
+            // Ignorar errores en la limpieza
+        }
+    }
+
+    private async Task ExtractText()
+    {
+        error = string.Empty;
+
+        if (currentFile == null)
+        {
+            error = "Por favor, seleccione un archivo primero.";
+            return;
+        }
+
+        try
+        {
+            // extractedTextNumber = await _ocrService.ExtractBBFromRegion(currentFile, x, y, width, height);
+            // extractedText = await _ocrService.ExtractTextFromRegion(currentFile, x, y, width, height);
+
+            if (regionSelected is Domain.ValueObjects.Region region)
+            {
+                var (textDebug, debugImage) = await _ocrService.ExtractTextFromRegionAndDebug(currentFile, region.PosX, region.PosY, region.Width, region.Height, region.Umbral.GetValueOrDefault(), region.IsOnlyNumber.GetValueOrDefault());
+
+                if(region.Category == "Names" && string.IsNullOrEmpty(textDebug))
+                    (textDebug, debugImage) = await _ocrService.ExtractTextFromRegionAndDebug(currentFile, region.PosX, region.PosY, region.Width, region.Height, region.InactiveUmbral.GetValueOrDefault(), region.IsOnlyNumber.GetValueOrDefault());
+
+                extractedTextDebug = textDebug;
+                debugImageUrl = debugImage;
+                StateHasChanged();
+            }
+            if (string.IsNullOrEmpty(extractedTextNumber))
+            {
+                error = "No se encontró texto en la región especificada.";
+            }
+        }
+        catch (Exception ex)
+        {
+            error = $"Error al procesar la imagen: {ex.Message}";
+        }
+    }
+
+    private string GetImageOverlayStyle()
+    {
+        return $@"
+            position: absolute;
+            border: 1px solid red;
+            pointer-events: none;
+            left: {x}px;
+            top: {y}px;
+            width: {width}px;
+            height: {height}px;
+            transform-origin: top left;
+            transform: scale(1); /* Ajusta este valor según necesites */
+        ";
+    }
+
+    private void OnRegionChange()
+    {
+        if (regionSelected is Domain.ValueObjects.Region region)
+        {
+            x = region.PosX;
+            y = region.PosY;
+            width = region.Width;
+            height = region.Height;
+        }        
+    }
+
+    private async Task UpdateRegion()
+    {
+        if (regionSelected is Domain.ValueObjects.Region region)
+        {
+            var request = new UpdateRegionRequest(
+                    region.Category,
+                    region.Name,
+                    x,
+                    y,
+                    width,
+                    height,
+                    region.IsHash,
+                    region.IsColor,
+                    region.IsBoard,
+                    region.Color,
+                    region.IsOnlyNumber,
+                    region.InactiveUmbral,
+                    region.Umbral);
+
+
+            await _regionUseCases.UpdateRegion.ExecuteAsync(request);
+            await LoadData();
+        }
+    }
+
+    private async Task GetColor()
+    {
+        if(currentFile != null)
+        {
+            var color = await _colorDetectionService.GetPixelColor(currentFile, x, y);
+            currentColor = $"#{color.Red:X2}{color.Green:X2}{color.Blue:X2}";
+            rgbValues = (color.Red, color.Green, color.Blue);
+            StateHasChanged();
+        }
+    }
+
+    private void NavigatePrevious()
+    {
+        if (currentImageIndex > 0)
+        {
+            currentImageIndex--;
+            var (file, dataUrl) = loadedImages[currentImageIndex];
+            currentFile = file;
+            imageDataUrl = dataUrl;
+        }
+    }
+
+    private void NavigateNext()
+    {
+        if (currentImageIndex < loadedImages.Count - 1)
+        {
+            currentImageIndex++;
+            var (file, dataUrl) = loadedImages[currentImageIndex];
+            currentFile = file;
+            imageDataUrl = dataUrl;
+        }
+    }
+
+    private async Task GetImage()
+    {
+        _imageRegionCrop = await _imageCrop.CropImageToBase64(currentFile, x, y, width, height);
+    }
+}

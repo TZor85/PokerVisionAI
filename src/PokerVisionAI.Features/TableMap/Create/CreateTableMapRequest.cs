@@ -1,4 +1,4 @@
 ﻿namespace PokerVisionAI.Features.TableMap.Create;
 
-public record CreateTableMapRequest(string Name, List<Domain.Entities.Region> Regions);
+public record CreateTableMapRequest(string Name, List<Domain.Entities.RegionCategory> Regions);
 

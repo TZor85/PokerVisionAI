@@ -5,7 +5,7 @@ namespace PokerVisionAI.Features.InitialConfig.Region;
 
 public class GetAllRegions
 {    
-    public async Task<List<RegionDTO>?> Executesync()
+    public async Task<List<RegionCategoryDTO>?> Executesync()
     {
         try
         {
@@ -36,12 +36,12 @@ public class GetAllRegions
                     var jsonContent = await reader.ReadToEndAsync();
 
                     // Deserializar el JSON a una lista de RegionDTO
-                    var regions = JsonSerializer.Deserialize<List<RegionDTO>>(jsonContent, new JsonSerializerOptions
+                    var regions = JsonSerializer.Deserialize<List<RegionCategoryDTO>>(jsonContent, new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
                     });
                     
-                    return regions ?? new List<RegionDTO>();
+                    return regions ?? new List<RegionCategoryDTO>();
                 }
                 else
                 {

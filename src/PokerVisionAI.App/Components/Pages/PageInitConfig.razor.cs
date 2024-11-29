@@ -29,7 +29,7 @@ namespace PokerVisionAI.App.Components.Pages
                 isInitializingRegions = true;
                 regionsMessage = null;
 
-                var regions = new List<Domain.Entities.Region>();
+                var regions = new List<Domain.Entities.RegionCategory>();
                 var regionsDto = await _allRegions.Executesync();
 
                 foreach (var item in regionsDto)

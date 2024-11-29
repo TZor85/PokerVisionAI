@@ -1,4 +1,4 @@
 ﻿namespace PokerVisionAI.Features.Regions.CreateAll;
 
-public record CreateAllRegionsRequest(List<Domain.Entities.Region> Regions);
+public record CreateAllRegionsRequest(List<Domain.Entities.RegionCategory> Regions);
 

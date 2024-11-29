@@ -1,12 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using PokerVisionAI.App.Services;
 using PokerVisionAI.Domain.Options;
 using PokerVisionAI.Features;
 using PokerVisionAI.Infrastructure;
 using System.Reflection;
-using System.Text;
-using System.Text.Json;
 
 namespace PokerVisionAI.App
 {
@@ -66,6 +64,13 @@ namespace PokerVisionAI.App
                 builder.Services.AddMauiBlazorWebView();
                 builder.Services.AddDataBase(builder.Configuration, true);
                 builder.Services.AddUseCases();
+
+                builder.Services.AddScoped<OcrService>();
+                builder.Services.AddScoped<ColorDetectionService>();
+                builder.Services.AddScoped<ImageNavigatorService>();
+                builder.Services.AddScoped<ImageCropperService>();
+                builder.Services.AddScoped<FileProcessorService>();
+                builder.Services.AddScoped<WindowCaptureService>();
 
 #if DEBUG
                 builder.Services.AddBlazorWebViewDeveloperTools();

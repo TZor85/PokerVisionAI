@@ -9,8 +9,8 @@
 @inject RegionUseCases _useCases
 
 <div class="container-fluid">
-    <RadzenDataGrid Data="@regions" 
-                    TItem="RegionDTO" 
+    <RadzenDataGrid Data="@regions"
+                    TItem="Domain.ValueObjects.Region"
                     GridLines="Radzen.DataGridGridLines.Both"
                     Count="@Count"
                     AllowFiltering="true" 
@@ -19,27 +19,27 @@
                     AllowPaging="true" 
                     PageSize="10">
         <Columns>
-            <RadzenDataGridColumn TItem="RegionDTO" Property="Name" Title="Nombre" Width="200px" />
-            <RadzenDataGridColumn TItem="RegionDTO" Property="PosX" Title="Pos X" Width="150px" />
-            <RadzenDataGridColumn TItem="RegionDTO" Property="PosY" Title="Pos Y" Width="150px" />
-            <RadzenDataGridColumn TItem="RegionDTO" Property="Width" Title="Ancho" Width="150px" />
-            <RadzenDataGridColumn TItem="RegionDTO" Property="Height" Title="Alto" Width="150px" />
-            <RadzenDataGridColumn TItem="RegionDTO" Property="IsHash" Title="Es Hash" Width="150px" >
+            <RadzenDataGridColumn TItem="Domain.ValueObjects.Region" Property="Name" Title="Nombre" Width="200px" />
+            <RadzenDataGridColumn TItem="Domain.ValueObjects.Region" Property="PosX" Title="Pos X" Width="150px" />
+            <RadzenDataGridColumn TItem="Domain.ValueObjects.Region" Property="PosY" Title="Pos Y" Width="150px" />
+            <RadzenDataGridColumn TItem="Domain.ValueObjects.Region" Property="Width" Title="Ancho" Width="150px" />
+            <RadzenDataGridColumn TItem="Domain.ValueObjects.Region" Property="Height" Title="Alto" Width="150px" />
+            <RadzenDataGridColumn TItem="Domain.ValueObjects.Region" Property="IsHash" Title="Es Hash" Width="150px">
                 <Template Context="data">
                     <RadzenCheckBox Value="@data.IsHash" Disabled="true" />
                 </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="RegionDTO" Property="IsColor" Title="Es Color" Width="150px">
+            <RadzenDataGridColumn TItem="Domain.ValueObjects.Region" Property="IsColor" Title="Es Color" Width="150px">
                 <Template Context="data">
                     <RadzenCheckBox Value="@data.IsColor" Disabled="true" />
                 </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="RegionDTO" Property="IsBoard" Title="Es Tablero" Width="150px">
+            <RadzenDataGridColumn TItem="Domain.ValueObjects.Region" Property="IsBoard" Title="Es Tablero" Width="150px">
                 <Template Context="data">
                     <RadzenCheckBox Value="@data.IsBoard" Disabled="true" />
                 </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="RegionDTO" Property="Color" Title="Color" Width="150px">
+            <RadzenDataGridColumn TItem="Domain.ValueObjects.Region" Property="Color" Title="Color" Width="150px">
                 <Template Context="data">
                     @if (!string.IsNullOrEmpty(data.Color))
                     {
@@ -48,18 +48,6 @@
                             <span>@data.Color</span>
                         </div>
                     }
-                </Template>
-            </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="RegionDTO" Context="region" Filterable="false" Sortable="false" TextAlign="TextAlign.Center">
-                <Template Context="region">
-                    <RadzenButton ButtonStyle="ButtonStyle.Base"
-                                  Icon="edit"
-                                  Size="ButtonSize.Small"
-                                  Click="@(() => UpdateRegion(region))" />
-                    <RadzenButton ButtonStyle="ButtonStyle.Danger" 
-                                Icon="delete" 
-                                Size="ButtonSize.Small"
-                                Click="@(() => DeleteRegion(region))" />
                 </Template>
             </RadzenDataGridColumn>
         </Columns>

@@ -14,12 +14,12 @@ public class GetRegion
         _documentStore = documentStore;
     }
 
-    public async Task<Result<RegionDTO>> ExecuteAsync(string id, CancellationToken ct = default)
+    public async Task<Result<RegionCategoryDTO>> ExecuteAsync(string id, CancellationToken ct = default)
     {
         try
         {
             using var session = _documentStore.QuerySession();
-            var reg = await session.LoadAsync<Domain.Entities.Region>(id, ct);
+            var reg = await session.LoadAsync<Domain.Entities.RegionCategory>(id, ct);
             if (reg == null)
                 return Result.NotFound();
             return Result.Success(reg.ToDto());

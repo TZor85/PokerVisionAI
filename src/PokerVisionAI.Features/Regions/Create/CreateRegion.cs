@@ -16,33 +16,18 @@ public class CreateRegion
     {
         try
         {
-            var region = new Domain.Entities.Region
+            var region = new Domain.Entities.RegionCategory
             {
                 Id = request.Name,
-                PosX = request.PosX,
-                PosY = request.PosY,
-                Width = request.Width,
-                Height = request.Height,
-                IsHash = request.IsHash,
-                IsColor = request.IsColor,
-                IsBoard = request.IsBoard,
-                Color = request.Color
+                Regions = request.Regions
             };
 
             using var session = _documentStore.LightweightSession();
-            var existingRegion = await session.LoadAsync<Domain.Entities.Region>(region.Id, ct);
+            var existingRegion = await session.LoadAsync<Domain.Entities.RegionCategory>(region.Id, ct);
 
             if (existingRegion != null)
                 return Result.Conflict($"Region with name {region.Id} already exists.");
-
-            if (existingRegion != null && existingRegion.DeletedDate != null)
-            {
-                existingRegion.DeletedDate = null;
-                session.Store(existingRegion);
-                await session.SaveChangesAsync(ct);
-                return Result.Success();
-            }
-
+            
             session.Store(region);
             await session.SaveChangesAsync(ct);
 

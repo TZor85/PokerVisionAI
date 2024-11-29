@@ -12,9 +12,9 @@ public partial class PageTableMap
 
     private List<TableMapDTO> tableMaps = new();
     private List<string> availableNames = new();
-    private List<RegionDTO> allRegions = new();
+    private List<RegionCategoryDTO> allRegions = new();
 
-    private List<RegionDTO> availableRegionsList = new();
+    private List<RegionCategoryDTO> availableRegionsList = new();
 
 
     protected override async Task OnInitializedAsync()
@@ -37,10 +37,10 @@ public partial class PageTableMap
         tableMaps = await _useCasesTableMaps.ListTableMaps.ExecuteAsync();
     }
 
-    private void AddRegion(RegionDTO region)
+    private void AddRegion(RegionCategoryDTO region)
     {
         if (selectedTableMap.Regions == null)
-            selectedTableMap.Regions = new List<RegionDTO>();
+            selectedTableMap.Regions = new List<RegionCategoryDTO>();
 
         if (!selectedTableMap.Regions.Any(r => r.Name == region.Name))
         {
@@ -51,7 +51,7 @@ public partial class PageTableMap
         StateHasChanged();
     }
 
-    private void RemoveRegion(RegionDTO region)
+    private void RemoveRegion(RegionCategoryDTO region)
     {
         availableRegionsList.Add(region);
         selectedTableMap.Regions?.Remove(region);

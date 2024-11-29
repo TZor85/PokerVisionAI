@@ -22,18 +22,19 @@ public class UpdateRegion
         try
         {
             using var session = _documentStore.LightweightSession();
-            var region = await session.LoadAsync<Domain.Entities.Region>(request.Name, ct);
+            var region = await session.LoadAsync<Domain.Entities.RegionCategory>(request.Category, ct);
             if (region == null)
                 return Result.NotFound();
 
-            region.PosX = request.PosX;
-            region.PosY = request.PosY;
-            region.Width = request.Width;
-            region.Height = request.Height;
-            region.IsHash = request.IsHash;
-            region.IsColor = request.IsColor;
-            region.IsBoard = request.IsBoard;
-            region.Color = request.Color;
+            var regionToRemove = region.Regions?.FirstOrDefault(r => r.Name == request.Name);
+            if (regionToRemove != null)
+            {
+                region.Regions?.Remove(regionToRemove);
+            }
+
+            var regionCategory = new Domain.ValueObjects.Region(request.Category, request.Name, request.PosX, request.PosY, request.Width, request.Height, request.IsHash, request.IsColor, request.IsBoard, request.Color, request.IsOnlyNumber, request.InactiveUmbral, request.Umbral);
+
+            region.Regions?.Add(regionCategory);
 
             session.Store(region);
             await session.SaveChangesAsync(ct);

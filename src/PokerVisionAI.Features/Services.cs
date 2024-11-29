@@ -13,7 +13,6 @@ using PokerVisionAI.Features.InitialConfig.TableMap;
 using PokerVisionAI.Features.Regions;
 using PokerVisionAI.Features.Regions.Create;
 using PokerVisionAI.Features.Regions.CreateAll;
-using PokerVisionAI.Features.Regions.Delete;
 using PokerVisionAI.Features.Regions.Get;
 using PokerVisionAI.Features.Regions.List;
 using PokerVisionAI.Features.Regions.Update;
@@ -34,7 +33,6 @@ public static class Services
             .AddScoped<GetRegion>()
             .AddScoped<ListRegions>()
             .AddScoped<UpdateRegion>()
-            .AddScoped<DeleteRegion>()
             .AddScoped<CreateAllRegions>()
             .AddScoped<RegionUseCases>()
             
@@ -59,5 +57,7 @@ public static class Services
             .AddScoped<GetAllCards>()
             .AddScoped<GetAllTableMaps>()
             .AddScoped<GetAllActions>();
+
+    
 
 }

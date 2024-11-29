@@ -15,12 +15,12 @@ public class ListRegions
         _documentStore = documentStore;
     }
 
-    public async Task<PagedResult<List<RegionDTO>>> ExecuteAsync(int pageNumber = 1, int pageSize = 50, CancellationToken ct = default)
+    public async Task<PagedResult<List<RegionCategoryDTO>>> ExecuteAsync(int pageNumber = 1, int pageSize = 50, CancellationToken ct = default)
     {
         try
         {
             using var session = _documentStore.QuerySession();
-            var regions = await session.Query<Domain.Entities.Region>().ToPagedListAsync(pageNumber, pageSize, ct);
+            var regions = await session.Query<Domain.Entities.RegionCategory>().ToPagedListAsync(pageNumber, pageSize, ct);
 
             var pageInfo = new PagedInfo(regions.PageNumber, regions.PageSize, regions.PageCount, regions.TotalItemCount);
             var catsDto = regions.Select(t => t.ToDto()).ToList();
@@ -29,7 +29,7 @@ public class ListRegions
         }
         catch (Exception ex)
         {
-            return Result<List<RegionDTO>>.CriticalError(ex.Message).ToPagedResult(new PagedInfo(0, 0, 0, 0));
+            return Result<List<RegionCategoryDTO>>.CriticalError(ex.Message).ToPagedResult(new PagedInfo(0, 0, 0, 0));
         }
     }
 }

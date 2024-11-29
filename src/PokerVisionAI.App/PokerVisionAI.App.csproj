@@ -63,6 +63,11 @@
     </ItemGroup>
 
     <ItemGroup>
+      <None Remove="Resources\tessdata\eng.traineddata" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="Resources\tessdata\eng.traineddata" />
       <EmbeddedResource Include="wwwroot\appsettings.Development.json" />
       <EmbeddedResource Include="wwwroot\appsettings.json" />
     </ItemGroup>
@@ -74,6 +79,8 @@
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
         <PackageReference Include="Radzen.Blazor" Version="5.5.5" />
         <PackageReference Include="SkiaSharp" Version="2.88.9" />
+        <PackageReference Include="Tesseract" Version="5.2.0" />
+        <PackageReference Include="Tesseract.Drawing" Version="5.2.0" />
     </ItemGroup>
 
     <ItemGroup>

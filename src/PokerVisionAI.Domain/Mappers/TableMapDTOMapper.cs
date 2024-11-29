@@ -6,7 +6,7 @@ public static class TableMapDTOMapper
 {
     public static TableMapDTO ToDto(this Entities.TableMap tableMap)
     {
-        var regions = new List<RegionDTO>();
+        var regions = new List<RegionCategoryDTO>();
 
         if (tableMap.Regions != null)
         {
@@ -25,7 +25,7 @@ public static class TableMapDTOMapper
 
     public static Entities.TableMap ToEntity(this TableMapDTO tableMap)
     {
-        var regions = new List<Entities.Region>();
+        var regions = new List<Entities.RegionCategory>();
 
         if (tableMap.Regions != null)
         {
