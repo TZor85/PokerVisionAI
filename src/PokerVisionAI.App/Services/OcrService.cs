@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Components.Forms;
 using SkiaSharp;
 using Tesseract;
-using Rect = Tesseract.Rect;
 
 namespace PokerVisionAI.App.Services;
 

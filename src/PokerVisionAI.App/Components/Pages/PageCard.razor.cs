@@ -35,15 +35,13 @@ namespace PokerVisionAI.App.Components.Pages
                 Force = newImage.Force,
                 Suit = newImage.Suit,
                 BinaryValue = newImage.BinaryValue,
-                ImageEncrypted = newImage.ImageEncrypted,
-                ImageBase64 = EncrypterImageHelper.GetImageBase64Decrypted(
-                                            newImage?.ImageEncrypted ?? string.Empty,
+                ImageBase64 = EncrypterImageHelper.GetImageBase64Decrypted(string.Empty,
                                             _encrypterOptions?.Value.Key ?? string.Empty)
             };
 
             var request = new CreateCardRequest(
                                         image?.Name ?? string.Empty,
-                                        image?.ImageEncrypted ?? string.Empty,
+                                        string.Empty,
                                         image?.ImageBase64 ?? string.Empty,
                                         image?.BinaryValue ?? string.Empty,
                                         image?.Force ?? 0,

@@ -19,7 +19,6 @@ public class CreateCard
             var image = new Domain.Entities.Card
             {
                 Id = request.Name,
-                ImageEncrypted = request.ImageEncrypted,
                 BinaryValue = request.BinaryValue,
                 ImageBase64 = request.ImageBase64,
                 Force = request.Force,
